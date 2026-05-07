@@ -1,3 +1,232 @@
-neoai-site/
- ├─ index.html      ← arquivo principal
- └─ version.txt     ← controle de versão (ex.: 1.0.0)
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Guia Futurista</title>
+    <style>
+        body {
+            /* Fundo de cidade cyberpunk */
+            background-image: url('https://images.unsplash.com/photo-1545670723-196ed0954986?q=80&w=2073&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        /* Camada escura para dar foco aos elementos holográficos */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(9, 10, 15, 0.7); /* Mais escuro e voltado pro azul escuro */
+            z-index: -1;
+        }
+
+        /* Nova Logo Futurista (Neon Cyan) */
+        .logo {
+            font-size: 70px;
+            font-weight: 900;
+            margin-bottom: 35px;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 2px #00e5ff; /* Contorno ciano */
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.6), 0 0 30px rgba(0, 229, 255, 0.4);
+            animation: pulse-glow 2s infinite alternate; /* Animação de pulso */
+        }
+
+        @keyframes pulse-glow {
+            0% { text-shadow: 0 0 15px rgba(0, 229, 255, 0.6), 0 0 30px rgba(0, 229, 255, 0.4); }
+            100% { text-shadow: 0 0 25px rgba(0, 229, 255, 0.9), 0 0 50px rgba(0, 229, 255, 0.7); }
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 580px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border-radius: 30px;
+            border: 1px solid rgba(0, 229, 255, 0.4);
+            background-color: rgba(15, 20, 25, 0.6);
+            color: #00e5ff; /* Texto digitado fica ciano */
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(0, 229, 255, 0.1);
+        }
+
+        .search-bar::placeholder {
+            color: rgba(0, 229, 255, 0.5);
+        }
+
+        .search-bar:focus {
+            background-color: rgba(15, 20, 25, 0.8);
+            border-color: #00e5ff;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.5), inset 0 0 10px rgba(0, 229, 255, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+        }
+
+        /* Estilo dos vetores (SVGs) */
+        svg {
+            width: 20px;
+            height: 20px;
+            stroke: rgba(0, 229, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .shortcuts {
+            display: flex;
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .shortcut {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            width: 80px;
+            transition: transform 0.2s ease;
+        }
+        
+        .shortcut:hover {
+            transform: translateY(-8px);
+        }
+
+        .shortcut-icon {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(15, 20, 25, 0.7);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 15px; /* Bordas mais quadradas estilo painel HUD */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Ícones dentro dos botões */
+        .shortcut-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #00e5ff;
+        }
+
+        /* Efeito de hover tecnológico (Muda para roxo/magenta) */
+        .shortcut:hover .shortcut-icon {
+            background-color: rgba(20, 10, 30, 0.9);
+            border-color: #d500f9;
+            box-shadow: 0 0 20px rgba(213, 0, 249, 0.6), inset 0 0 10px rgba(213, 0, 249, 0.3);
+        }
+
+        .shortcut:hover .shortcut-icon svg {
+            stroke: #d500f9;
+            filter: drop-shadow(0 0 5px #d500f9);
+        }
+
+        .shortcut-text {
+            font-size: 13px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .shortcut:hover .shortcut-text {
+            color: #d500f9;
+            text-shadow: 0 0 8px rgba(213, 0, 249, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo">
+        BUSCAR
+    </div>
+
+    <div class="search-container">
+        <div class="search-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </div>
+        <input type="text" class="search-bar" id="inputBusca" placeholder="Iniciar varredura na rede...">
+    </div>
+
+    <div class="shortcuts">
+        <div class="shortcut" onclick="window.location.href='https://google.com'">
+            <div class="shortcut-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+            </div>
+            <div class="shortcut-text">REDE</div>
+        </div>
+        <div class="shortcut" onclick="window.location.href='https://youtube.com'">
+            <div class="shortcut-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect>
+                    <polygon points="10 9 15 12 10 15 10 9"></polygon>
+                </svg>
+            </div>
+            <div class="shortcut-text">MÍDIA</div>
+        </div>
+        <div class="shortcut" onclick="window.location.href='https://github.com'">
+            <div class="shortcut-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+            </div>
+            <div class="shortcut-text">SISTEMA</div>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('inputBusca');
+
+        searchInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const query = searchInput.value.trim();
+
+                if (query !== '') {
+                    if (query.includes('.') && !query.includes(' ')) {
+                        window.location.href = query.startsWith('http') ? query : 'https://' + query;
+                    } else {
+                        window.location.href = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
