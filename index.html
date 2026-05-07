@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal de Varredura - Nova Guia</title>
+    <title>Terminal de Varredura Embutido</title>
     <style>
         body {
             background-image: url('https://images.unsplash.com/photo-1545670723-196ed0954986?q=80&w=2073&auto=format&fit=crop'); 
@@ -49,6 +49,7 @@
             width: 100%;
             max-width: 580px;
             position: relative;
+            z-index: 10;
         }
 
         .search-bar {
@@ -85,73 +86,80 @@
             align-items: center;
         }
 
-        svg {
+        .search-icon svg {
             width: 20px;
             height: 20px;
             stroke: rgba(0, 229, 255, 0.7);
         }
 
-        /* --- PAINEL EXTREMO DE RESULTADOS NA PRÓPRIA TELA --- */
-        .results-panel {
-            display: none; /* Escondido até você pesquisar */
+        /* --- MONITOR HOLOGRÁFICO EXTREMO (IFRAME) --- */
+        .terminal-monitor {
+            display: none; /* Escondido até pesquisar */
             width: 100%;
-            max-width: 580px;
+            max-width: 1000px; /* Bem largo para ver os sites direito */
+            height: 60vh; /* Ocupa 60% da altura da tela */
             margin-top: 30px;
-            background-color: rgba(15, 20, 25, 0.8);
-            border: 1px solid #00e5ff;
+            border: 2px solid #00e5ff;
             border-radius: 15px;
-            padding: 20px;
-            box-sizing: border-box;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3), inset 0 0 15px rgba(0, 229, 255, 0.1);
-            color: #00e5ff;
-            backdrop-filter: blur(10px);
-            text-align: left;
-            max-height: 300px;
-            overflow-y: auto;
-            animation: fadeIn 0.5s ease;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.4), inset 0 0 20px rgba(0, 229, 255, 0.2);
+            position: relative;
+            animation: openMonitor 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes openMonitor {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .results-panel h3 {
-            margin-top: 0;
-            color: #d500f9;
-            text-shadow: 0 0 10px rgba(213, 0, 249, 0.6);
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        /* Efeito visual de Scanlines por cima da tela */
+        .terminal-monitor::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 229, 255, 0.03),
+                rgba(0, 229, 255, 0.03) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none; /* Permite clicar no site através das linhas */
+            border-radius: 15px;
         }
 
-        .results-panel p {
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-            font-size: 15px;
-        }
-
-        .btn-global {
-            display: block;
-            margin-top: 20px;
-            padding: 12px;
-            background-color: rgba(213, 0, 249, 0.1);
-            border: 1px solid #d500f9;
-            color: #d500f9;
-            text-transform: uppercase;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
+        /* A tela em si */
+        iframe {
             width: 100%;
-            box-sizing: border-box;
-            letter-spacing: 1px;
+            height: 100%;
+            border: none;
+            border-radius: 15px;
         }
 
-        .btn-global:hover {
-            background-color: rgba(213, 0, 249, 0.3);
+        /* Botão de Fechar o Monitor */
+        .close-btn {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            background: rgba(15, 20, 25, 0.9);
+            color: #d500f9;
+            border: 2px solid #d500f9;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
             box-shadow: 0 0 15px rgba(213, 0, 249, 0.6);
-            text-shadow: 0 0 8px rgba(213, 0, 249, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #d500f9;
+            color: white;
+            box-shadow: 0 0 25px rgba(213, 0, 249, 0.9);
+            transform: scale(1.1);
         }
 
         /* --- ATALHOS --- */
@@ -159,6 +167,7 @@
             display: flex;
             gap: 30px;
             margin-top: 50px;
+            z-index: 10;
         }
 
         .shortcut {
@@ -221,7 +230,7 @@
 </head>
 <body>
 
-    <div class="logo">
+    <div class="logo" id="logoText">
         BUSCAR
     </div>
 
@@ -232,10 +241,13 @@
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
         </div>
-        <input type="text" class="search-bar" id="inputBusca" placeholder="Iniciar varredura de dados...">
+        <input type="text" class="search-bar" id="inputBusca" placeholder="Iniciar varredura embutida...">
     </div>
 
-    <div class="results-panel" id="resultsPanel"></div>
+    <div class="terminal-monitor" id="monitor">
+        <button class="close-btn" onclick="fecharMonitor()">X</button>
+        <iframe id="telaTerminal" src=""></iframe>
+    </div>
 
     <div class="shortcuts" id="shortcutsPanel">
         <div class="shortcut" onclick="window.location.href='https://google.com'">
@@ -270,63 +282,39 @@
 
     <script>
         const searchInput = document.getElementById('inputBusca');
-        const resultsPanel = document.getElementById('resultsPanel');
+        const monitor = document.getElementById('monitor');
+        const telaTerminal = document.getElementById('telaTerminal');
         const shortcutsPanel = document.getElementById('shortcutsPanel');
+        const logoText = document.getElementById('logoText');
 
-        searchInput.addEventListener('keypress', async function(event) {
+        // Função para fechar o monitor e voltar ao normal
+        function fecharMonitor() {
+            monitor.style.display = 'none';
+            shortcutsPanel.style.display = 'flex';
+            logoText.style.display = 'block'; // Volta a logo
+            telaTerminal.src = ''; // Limpa a memória da tela
+            searchInput.value = ''; // Limpa a barra
+        }
+
+        searchInput.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 const query = searchInput.value.trim();
 
                 if (query !== '') {
-                    // Se for um site direto (ex: youtube.com)
+                    // Prepara a interface para o modo terminal
+                    shortcutsPanel.style.display = 'none';
+                    logoText.style.display = 'none'; // Esconde a logo para dar mais espaço pra tela
+                    monitor.style.display = 'block';
+                    
+                    // Lógica do Iframe
                     if (query.includes('.') && !query.includes(' ')) {
-                        window.location.href = query.startsWith('http') ? query : 'https://' + query;
+                        // Se for um link direto
+                        telaTerminal.src = query.startsWith('http') ? query : 'https://' + query;
                     } else {
-                        // MODO EXTREMO: Varredura de dados na própria página
-                        shortcutsPanel.style.display = 'none'; // Esconde os ícones de atalho
-                        resultsPanel.style.display = 'block'; // Mostra a tela de resultados
-                        
-                        // Efeito de carregamento
-                        resultsPanel.innerHTML = '<p>> Estabelecendo conexão com banco de dados...</p><div style="width: 100%; height: 2px; background: #00e5ff; margin-top: 15px; box-shadow: 0 0 10px #00e5ff; animation: pulse-glow 0.5s infinite alternate;"></div>';
-
-                        try {
-                            // Conecta na API pública para extrair o texto de resposta
-                            const res = await fetch(`https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
-                            const data = await res.json();
-
-                            if (data.title && data.extract) {
-                                // Se encontrou dados diretos, projeta o holograma na tela!
-                                resultsPanel.innerHTML = `
-                                    <h3>[ ARQUIVO: ${data.title} ]</h3>
-                                    <p>${data.extract}</p>
-                                    <button class="btn-global" onclick="window.location.href='https://www.google.com/search?q=${encodeURIComponent(query)}'">
-                                        Prosseguir varredura no Google
-                                    </button>
-                                `;
-                            } else {
-                                throw new Error("Dado muito específico");
-                            }
-                        } catch (e) {
-                            // Se for algo que precise do Google (tipo "comprar tênis" ou "previsão do tempo")
-                            resultsPanel.innerHTML = `
-                                <p style="color: #ea4335; text-shadow: 0 0 8px rgba(234, 67, 53, 0.6);">
-                                    > AVISO: Dados complexos detectados. Necessário acesso à Rede Externa.
-                                </p>
-                                <button class="btn-global" onclick="window.location.href='https://www.google.com/search?q=${encodeURIComponent(query)}'">
-                                    Forçar busca por "${query}" no Google
-                                </button>
-                            `;
-                        }
+                        // Usando Bing para pesquisa embutida
+                        telaTerminal.src = 'https://www.bing.com/search?q=' + encodeURIComponent(query);
                     }
                 }
-            }
-        });
-
-        // Se o input ficar vazio e apagar tudo, volta os atalhos
-        searchInput.addEventListener('keyup', function() {
-            if (searchInput.value.trim() === '') {
-                resultsPanel.style.display = 'none';
-                shortcutsPanel.style.display = 'flex';
             }
         });
     </script>
