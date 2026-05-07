@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Guia Futurista</title>
+    <title>Terminal de Varredura - Nova Guia</title>
     <style>
         body {
-            /* Fundo de cidade cyberpunk */
             background-image: url('https://images.unsplash.com/photo-1545670723-196ed0954986?q=80&w=2073&auto=format&fit=crop'); 
             background-size: cover;
             background-position: center;
@@ -21,16 +20,14 @@
             overflow: hidden;
         }
         
-        /* Camada escura para dar foco aos elementos holográficos */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(9, 10, 15, 0.7); /* Mais escuro e voltado pro azul escuro */
+            background-color: rgba(9, 10, 15, 0.75); 
             z-index: -1;
         }
 
-        /* Nova Logo Futurista (Neon Cyan) */
         .logo {
             font-size: 70px;
             font-weight: 900;
@@ -38,9 +35,9 @@
             letter-spacing: 10px;
             text-transform: uppercase;
             color: transparent;
-            -webkit-text-stroke: 2px #00e5ff; /* Contorno ciano */
+            -webkit-text-stroke: 2px #00e5ff; 
             text-shadow: 0 0 15px rgba(0, 229, 255, 0.6), 0 0 30px rgba(0, 229, 255, 0.4);
-            animation: pulse-glow 2s infinite alternate; /* Animação de pulso */
+            animation: pulse-glow 2s infinite alternate; 
         }
 
         @keyframes pulse-glow {
@@ -60,7 +57,7 @@
             border-radius: 30px;
             border: 1px solid rgba(0, 229, 255, 0.4);
             background-color: rgba(15, 20, 25, 0.6);
-            color: #00e5ff; /* Texto digitado fica ciano */
+            color: #00e5ff; 
             font-size: 16px;
             outline: none;
             box-sizing: border-box;
@@ -88,14 +85,76 @@
             align-items: center;
         }
 
-        /* Estilo dos vetores (SVGs) */
         svg {
             width: 20px;
             height: 20px;
             stroke: rgba(0, 229, 255, 0.7);
-            transition: all 0.3s ease;
         }
 
+        /* --- PAINEL EXTREMO DE RESULTADOS NA PRÓPRIA TELA --- */
+        .results-panel {
+            display: none; /* Escondido até você pesquisar */
+            width: 100%;
+            max-width: 580px;
+            margin-top: 30px;
+            background-color: rgba(15, 20, 25, 0.8);
+            border: 1px solid #00e5ff;
+            border-radius: 15px;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3), inset 0 0 15px rgba(0, 229, 255, 0.1);
+            color: #00e5ff;
+            backdrop-filter: blur(10px);
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-panel h3 {
+            margin-top: 0;
+            color: #d500f9;
+            text-shadow: 0 0 10px rgba(213, 0, 249, 0.6);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .results-panel p {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .btn-global {
+            display: block;
+            margin-top: 20px;
+            padding: 12px;
+            background-color: rgba(213, 0, 249, 0.1);
+            border: 1px solid #d500f9;
+            color: #d500f9;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            letter-spacing: 1px;
+        }
+
+        .btn-global:hover {
+            background-color: rgba(213, 0, 249, 0.3);
+            box-shadow: 0 0 15px rgba(213, 0, 249, 0.6);
+            text-shadow: 0 0 8px rgba(213, 0, 249, 0.8);
+        }
+
+        /* --- ATALHOS --- */
         .shortcuts {
             display: flex;
             gap: 30px;
@@ -120,24 +179,21 @@
             height: 60px;
             background-color: rgba(15, 20, 25, 0.7);
             border: 1px solid rgba(0, 229, 255, 0.3);
-            border-radius: 15px; /* Bordas mais quadradas estilo painel HUD */
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 12px;
             backdrop-filter: blur(5px);
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
-        /* Ícones dentro dos botões */
         .shortcut-icon svg {
             width: 28px;
             height: 28px;
             stroke: #00e5ff;
         }
 
-        /* Efeito de hover tecnológico (Muda para roxo/magenta) */
         .shortcut:hover .shortcut-icon {
             background-color: rgba(20, 10, 30, 0.9);
             border-color: #d500f9;
@@ -176,10 +232,12 @@
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
         </div>
-        <input type="text" class="search-bar" id="inputBusca" placeholder="Iniciar varredura na rede...">
+        <input type="text" class="search-bar" id="inputBusca" placeholder="Iniciar varredura de dados...">
     </div>
 
-    <div class="shortcuts">
+    <div class="results-panel" id="resultsPanel"></div>
+
+    <div class="shortcuts" id="shortcutsPanel">
         <div class="shortcut" onclick="window.location.href='https://google.com'">
             <div class="shortcut-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -212,18 +270,63 @@
 
     <script>
         const searchInput = document.getElementById('inputBusca');
+        const resultsPanel = document.getElementById('resultsPanel');
+        const shortcutsPanel = document.getElementById('shortcutsPanel');
 
-        searchInput.addEventListener('keypress', function(event) {
+        searchInput.addEventListener('keypress', async function(event) {
             if (event.key === 'Enter') {
                 const query = searchInput.value.trim();
 
                 if (query !== '') {
+                    // Se for um site direto (ex: youtube.com)
                     if (query.includes('.') && !query.includes(' ')) {
                         window.location.href = query.startsWith('http') ? query : 'https://' + query;
                     } else {
-                        window.location.href = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+                        // MODO EXTREMO: Varredura de dados na própria página
+                        shortcutsPanel.style.display = 'none'; // Esconde os ícones de atalho
+                        resultsPanel.style.display = 'block'; // Mostra a tela de resultados
+                        
+                        // Efeito de carregamento
+                        resultsPanel.innerHTML = '<p>> Estabelecendo conexão com banco de dados...</p><div style="width: 100%; height: 2px; background: #00e5ff; margin-top: 15px; box-shadow: 0 0 10px #00e5ff; animation: pulse-glow 0.5s infinite alternate;"></div>';
+
+                        try {
+                            // Conecta na API pública para extrair o texto de resposta
+                            const res = await fetch(`https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+                            const data = await res.json();
+
+                            if (data.title && data.extract) {
+                                // Se encontrou dados diretos, projeta o holograma na tela!
+                                resultsPanel.innerHTML = `
+                                    <h3>[ ARQUIVO: ${data.title} ]</h3>
+                                    <p>${data.extract}</p>
+                                    <button class="btn-global" onclick="window.location.href='https://www.google.com/search?q=${encodeURIComponent(query)}'">
+                                        Prosseguir varredura no Google
+                                    </button>
+                                `;
+                            } else {
+                                throw new Error("Dado muito específico");
+                            }
+                        } catch (e) {
+                            // Se for algo que precise do Google (tipo "comprar tênis" ou "previsão do tempo")
+                            resultsPanel.innerHTML = `
+                                <p style="color: #ea4335; text-shadow: 0 0 8px rgba(234, 67, 53, 0.6);">
+                                    > AVISO: Dados complexos detectados. Necessário acesso à Rede Externa.
+                                </p>
+                                <button class="btn-global" onclick="window.location.href='https://www.google.com/search?q=${encodeURIComponent(query)}'">
+                                    Forçar busca por "${query}" no Google
+                                </button>
+                            `;
+                        }
                     }
                 }
+            }
+        });
+
+        // Se o input ficar vazio e apagar tudo, volta os atalhos
+        searchInput.addEventListener('keyup', function() {
+            if (searchInput.value.trim() === '') {
+                resultsPanel.style.display = 'none';
+                shortcutsPanel.style.display = 'flex';
             }
         });
     </script>
