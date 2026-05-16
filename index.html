@@ -3,321 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal de Varredura Embutido</title>
+    <title>Assistente Proativo - Download</title>
     <style>
         body {
-            background-image: url('https://images.unsplash.com/photo-1545670723-196ed0954986?q=80&w=2073&auto=format&fit=crop'); 
-            background-size: cover;
-            background-position: center;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
             margin: 0;
-            overflow: hidden;
-        }
-        
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(9, 10, 15, 0.75); 
-            z-index: -1;
-        }
-
-        .logo {
-            font-size: 70px;
-            font-weight: 900;
-            margin-bottom: 35px;
-            letter-spacing: 10px;
-            text-transform: uppercase;
-            color: transparent;
-            -webkit-text-stroke: 2px #00e5ff; 
-            text-shadow: 0 0 15px rgba(0, 229, 255, 0.6), 0 0 30px rgba(0, 229, 255, 0.4);
-            animation: pulse-glow 2s infinite alternate; 
-        }
-
-        @keyframes pulse-glow {
-            0% { text-shadow: 0 0 15px rgba(0, 229, 255, 0.6), 0 0 30px rgba(0, 229, 255, 0.4); }
-            100% { text-shadow: 0 0 25px rgba(0, 229, 255, 0.9), 0 0 50px rgba(0, 229, 255, 0.7); }
-        }
-
-        .search-container {
-            width: 100%;
-            max-width: 580px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .search-bar {
-            width: 100%;
-            padding: 15px 20px 15px 50px;
-            border-radius: 30px;
-            border: 1px solid rgba(0, 229, 255, 0.4);
-            background-color: rgba(15, 20, 25, 0.6);
-            color: #00e5ff; 
-            font-size: 16px;
-            outline: none;
-            box-sizing: border-box;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            box-shadow: inset 0 0 10px rgba(0, 229, 255, 0.1);
-        }
-
-        .search-bar::placeholder {
-            color: rgba(0, 229, 255, 0.5);
-        }
-
-        .search-bar:focus {
-            background-color: rgba(15, 20, 25, 0.8);
-            border-color: #00e5ff;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.5), inset 0 0 10px rgba(0, 229, 255, 0.2);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
             display: flex;
-            align-items: center;
-        }
-
-        .search-icon svg {
-            width: 20px;
-            height: 20px;
-            stroke: rgba(0, 229, 255, 0.7);
-        }
-
-        /* --- MONITOR HOLOGRÁFICO EXTREMO (IFRAME) --- */
-        .terminal-monitor {
-            display: none; /* Escondido até pesquisar */
-            width: 100%;
-            max-width: 1000px; /* Bem largo para ver os sites direito */
-            height: 60vh; /* Ocupa 60% da altura da tela */
-            margin-top: 30px;
-            border: 2px solid #00e5ff;
-            border-radius: 15px;
-            background-color: rgba(0, 0, 0, 0.8);
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.4), inset 0 0 20px rgba(0, 229, 255, 0.2);
-            position: relative;
-            animation: openMonitor 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        @keyframes openMonitor {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        /* Efeito visual de Scanlines por cima da tela */
-        .terminal-monitor::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 229, 255, 0.03),
-                rgba(0, 229, 255, 0.03) 1px,
-                transparent 1px,
-                transparent 3px
-            );
-            pointer-events: none; /* Permite clicar no site através das linhas */
-            border-radius: 15px;
-        }
-
-        /* A tela em si */
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 15px;
-        }
-
-        /* Botão de Fechar o Monitor */
-        .close-btn {
-            position: absolute;
-            top: -15px;
-            right: -15px;
-            background: rgba(15, 20, 25, 0.9);
-            color: #d500f9;
-            border: 2px solid #d500f9;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 20;
-            box-shadow: 0 0 15px rgba(213, 0, 249, 0.6);
-            transition: all 0.3s ease;
-        }
-
-        .close-btn:hover {
-            background: #d500f9;
-            color: white;
-            box-shadow: 0 0 25px rgba(213, 0, 249, 0.9);
-            transform: scale(1.1);
-        }
-
-        /* --- ATALHOS --- */
-        .shortcuts {
-            display: flex;
-            gap: 30px;
-            margin-top: 50px;
-            z-index: 10;
-        }
-
-        .shortcut {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            width: 80px;
-            transition: transform 0.2s ease;
-        }
-        
-        .shortcut:hover {
-            transform: translateY(-8px);
-        }
-
-        .shortcut-icon {
-            width: 60px;
-            height: 60px;
-            background-color: rgba(15, 20, 25, 0.7);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            margin-bottom: 12px;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
+            align-items: center;
+            min-height: 100vh;
         }
-
-        .shortcut-icon svg {
-            width: 28px;
-            height: 28px;
-            stroke: #00e5ff;
-        }
-
-        .shortcut:hover .shortcut-icon {
-            background-color: rgba(20, 10, 30, 0.9);
-            border-color: #d500f9;
-            box-shadow: 0 0 20px rgba(213, 0, 249, 0.6), inset 0 0 10px rgba(213, 0, 249, 0.3);
-        }
-
-        .shortcut:hover .shortcut-icon svg {
-            stroke: #d500f9;
-            filter: drop-shadow(0 0 5px #d500f9);
-        }
-
-        .shortcut-text {
-            font-size: 13px;
+        .container {
             text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            letter-spacing: 1px;
-            transition: color 0.3s ease;
+            background-color: #1e293b;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
         }
-
-        .shortcut:hover .shortcut-text {
-            color: #d500f9;
-            text-shadow: 0 0 8px rgba(213, 0, 249, 0.8);
+        h1 {
+            color: #38bdf8;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .btn-download {
+            display: inline-block;
+            background-color: #38bdf8;
+            color: #0f172a;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-top: 25px;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        .btn-download:hover {
+            background-color: #7dd3fc;
+            transform: translateY(-2px);
+        }
+        .instructions {
+            margin-top: 30px;
+            text-align: left;
+            background-color: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .instructions code {
+            color: #f43f5e;
+            background-color: #27272a;
+            padding: 2px 6px;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
-    <div class="logo" id="logoText">
-        BUSCAR
-    </div>
+    <div class="container">
+        <h1>Assistente de Sistema PC</h1>
+        <p>Monitore a integridade do seu hardware, placa de vídeo e logs do Windows em tempo real de forma proativa.</p>
+        
+        <!-- LINK DO SEU REPOSITÓRIO OU DA RELEASE NO GITHUB -->
+        <a href="URL_DO_SEU_ARQUIVO_NO_GITHUB" class="btn-download" download>
+            Baixar Assistente (.py)
+        </a>
 
-    <div class="search-container">
-        <div class="search-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-        </div>
-        <input type="text" class="search-bar" id="inputBusca" placeholder="Iniciar varredura embutida...">
-    </div>
-
-    <div class="terminal-monitor" id="monitor">
-        <button class="close-btn" onclick="fecharMonitor()">X</button>
-        <iframe id="telaTerminal" src=""></iframe>
-    </div>
-
-    <div class="shortcuts" id="shortcutsPanel">
-        <div class="shortcut" onclick="window.location.href='https://google.com'">
-            <div class="shortcut-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
-            </div>
-            <div class="shortcut-text">REDE</div>
-        </div>
-        <div class="shortcut" onclick="window.location.href='https://youtube.com'">
-            <div class="shortcut-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect>
-                    <polygon points="10 9 15 12 10 15 10 9"></polygon>
-                </svg>
-            </div>
-            <div class="shortcut-text">MÍDIA</div>
-        </div>
-        <div class="shortcut" onclick="window.location.href='https://github.com'">
-            <div class="shortcut-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="16 18 22 12 16 6"></polyline>
-                    <polyline points="8 6 2 12 8 18"></polyline>
-                </svg>
-            </div>
-            <div class="shortcut-text">SISTEMA</div>
+        <div class="instructions">
+            <h3 style="margin-top:0; color:#38bdf8;">Como rodar no PC:</h3>
+            <ol style="margin-bottom:0; padding-left:20px; color:#94a3b8;">
+                <li>Instale o Python no seu Windows.</li>
+                <li>Abra o terminal e instale os requisitos: <code>pip install requests psutil</code>.</li>
+                <li>Execute o script baixado para iniciar o monitoramento.</li>
+            </ol>
         </div>
     </div>
-
-    <script>
-        const searchInput = document.getElementById('inputBusca');
-        const monitor = document.getElementById('monitor');
-        const telaTerminal = document.getElementById('telaTerminal');
-        const shortcutsPanel = document.getElementById('shortcutsPanel');
-        const logoText = document.getElementById('logoText');
-
-        // Função para fechar o monitor e voltar ao normal
-        function fecharMonitor() {
-            monitor.style.display = 'none';
-            shortcutsPanel.style.display = 'flex';
-            logoText.style.display = 'block'; // Volta a logo
-            telaTerminal.src = ''; // Limpa a memória da tela
-            searchInput.value = ''; // Limpa a barra
-        }
-
-        searchInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                const query = searchInput.value.trim();
-
-                if (query !== '') {
-                    // Prepara a interface para o modo terminal
-                    shortcutsPanel.style.display = 'none';
-                    logoText.style.display = 'none'; // Esconde a logo para dar mais espaço pra tela
-                    monitor.style.display = 'block';
-                    
-                    // Lógica do Iframe
-                    if (query.includes('.') && !query.includes(' ')) {
-                        // Se for um link direto
-                        telaTerminal.src = query.startsWith('http') ? query : 'https://' + query;
-                    } else {
-                        // Usando Bing para pesquisa embutida
-                        telaTerminal.src = 'https://www.bing.com/search?q=' + encodeURIComponent(query);
-                    }
-                }
-            }
-        });
-    </script>
 
 </body>
 </html>
