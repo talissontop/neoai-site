@@ -9,13 +9,13 @@
     <meta name="apple-mobile-web-app-title" content="VØLT Share">
     <meta name="theme-color" content="#0f172a">
     
-    <!-- TAGS DE ALTA COMPATIBILIDADE EXTRAÍDAS DOS FÓRUNS IPAD/IPHONE -->
+    <!-- Tags de alta compatibilidade para iOS e iPadOS -->
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="format-detection" content="telephone=no">
     <meta name="handheldfriendly" content="true">
     
     <!-- Ícone que aparecerá na tela inicial do iPhone/iPad -->
-    <link rel="apple-touch-icon" href="https://via.placeholder.com/192/00eafe/000000?text=SHARE">
+    <link class="pwa-icon" rel="apple-touch-icon" href="https://via.placeholder.com/192/00eafe/000000?text=SHARE">
 
     <title>VØLT Share - P2P AirDrop Universal</title>
 
@@ -44,7 +44,6 @@
             color: var(--text-color);
             min-height: 100vh;
             overflow: hidden;
-            /* Otimização CSS de toque e rolagem para iPadOS e iOS */
             -webkit-overflow-scrolling: touch;
         }
 
@@ -235,26 +234,26 @@
             
             <div class="info-features">
                 <div class="feature-item">
-                    <div class="feature-icon">🌐</div>
+                    <div class="feature-icon">🚀</div>
                     <div class="feature-text">
-                        <h3>AirDrop Universal P2P</h3>
-                        <p>Envie arquivos diretamente para qualquer celular ou computador na mesma sala, sem precisar de cabos ou da App Store.</p>
+                        <h3>WhatsApp, Instagram & TikTok</h3>
+                        <p>Compartilhe mídias e arquivos diretamente com seus contatos e redes sociais num piscar de olhos.</p>
                     </div>
                 </div>
 
                 <div class="feature-item">
                     <div class="feature-icon">🛡️</div>
                     <div class="feature-text">
-                        <h3>Criptografia WebRTC</h3>
-                        <p>Os arquivos são quebrados em pacotes e transmitidos direto de um aparelho para o outro de forma privada.</p>
+                        <h3>Criptografia WebRTC P2P</h3>
+                        <p>Os arquivos correm direto de um aparelho para o outro de forma 100% segura e privada pelo ar.</p>
                     </div>
                 </div>
 
                 <div class="feature-item">
                     <div class="feature-icon">📱</div>
                     <div class="feature-text">
-                        <h3>Foco Total no iOS e iPadOS</h3>
-                        <p>Desenvolvido para disparar a folha de compartilhamento nativa do iPhone 8 Plus em diante ao receber arquivos.</p>
+                        <h3>App Nativo e Off-line</h3>
+                        <p>Compatibilidade total com iPhone 8 Plus e iPads. Salve na tela inicial e use sem precisar abrir o navegador de novo.</p>
                     </div>
                 </div>
             </div>
@@ -268,7 +267,7 @@
     <div class="screen-container" id="appScreen" style="display: none;">
         <div class="header">
             <h1>VØLT<span>SHARE</span></h1>
-            <p>P2P Transfer System</p>
+            <p>P2P Social Transfer</p>
         </div>
 
         <div class="network-status">
@@ -280,7 +279,7 @@
             <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#00eafe" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
             </svg>
-            <p id="dropText">Toque para selecionar o arquivo que deseja enviar</p>
+            <p id="dropText">Toque para selecionar fotos, vídeos ou arquivos</p>
             <div class="file-name" id="fileName"></div>
         </div>
 
@@ -296,21 +295,18 @@
     </div>
 
     <script>
-        // SISTEMA AUTOMÁTICO NATIVO OFF-LINE (SERVICE WORKER)
+        // Ativador Off-line nativo do Service Worker (Mantido)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('VØLT Share agora está disponível offline!', reg))
-                    .catch(err => console.log('Erro ao ativar modo offline:', err));
+                    .then(reg => console.log('VØLT Share pronto offline!', reg))
+                    .catch(err => console.log('Erro sw:', err));
             });
         }
 
-        // Elementos de tela
         const introScreen = document.getElementById('introScreen');
         const appScreen = document.getElementById('appScreen');
         const startBtn = document.getElementById('startBtn');
-
-        // Elementos do app
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const shareBtn = document.getElementById('shareBtn');
@@ -355,11 +351,8 @@
 
         function inicializarSinalizacao() {
             socket = new WebSocket('wss://stream.socketsbay.com/wss/v2/1/demo/');
-
-            socket.onopen = () => {
-                enviarSinal({ type: 'join', room: roomName });
-            };
-
+            socket.onopen = () => enviarSinal({ type: 'join', room: roomName });
+            
             socket.onmessage = async (event) => {
                 const data = JSON.parse(event.data);
                 if (data.room !== roomName) return;
@@ -399,11 +392,11 @@
             peerConnection.onconnectionstatechange = () => {
                 if (peerConnection.connectionState === 'connected') {
                     statusDot.classList.add('online');
-                    statusPeerText.innerText = 'Conectado de forma segura com o outro aparelho!';
+                    statusPeerText.innerText = 'Conectado com o outro dispositivo!';
                     statusMessage.innerText = 'Ponte P2P estabelecida.';
                 } else if (peerConnection.connectionState === 'disconnected') {
                     statusDot.classList.remove('online');
-                    statusPeerText.innerText = 'Aparelho desconectado.';
+                    statusPeerText.innerText = 'Dispositivo desconectado.';
                     peerConnection = null;
                 }
             };
@@ -411,7 +404,6 @@
             if (isOfferor) {
                 dataChannel = peerConnection.createDataChannel('fileTransfer');
                 configurarCanalDados();
-                
                 peerConnection.createOffer().then(offer => {
                     return peerConnection.setLocalDescription(offer);
                 }).then(() => {
@@ -427,7 +419,6 @@
 
         function configurarCanalDados() {
             dataChannel.binaryType = 'arraybuffer';
-
             dataChannel.onmessage = (event) => {
                 if (typeof event.data === 'string') {
                     const info = JSON.parse(event.data);
@@ -436,7 +427,7 @@
                         receivedChunks = [];
                         statusMessage.innerText = `Recebendo: ${info.name}...`;
                     } else if (info.type === 'eof') {
-                        statusMessage.innerText = 'Reconstruindo arquivo recebido...';
+                        statusMessage.innerText = 'Reconstruindo mídia recebida...';
                         const finalBlob = new Blob(receivedChunks, { type: incomingFileInfo.fileType });
                         dispararCompartilhamentoNativo(finalBlob, incomingFileInfo.name);
                     }
@@ -446,16 +437,19 @@
             };
         }
 
+        // FUNÇÃO DE DISPARO INTERNA CONFIGURADA EXCLUSIVAMENTE PARA REDES SOCIAIS DO IOS
         async function dispararCompartilhamentoNativo(blob, name) {
             try {
                 const safeFile = new File([blob], name, { type: blob.type || 'application/octet-stream' });
+                
+                // O iOS lê os parâmetros abaixo para injetar as opções certas no menu de compartilhamento
                 if (navigator.canShare && navigator.canShare({ files: [safeFile] })) {
                     await navigator.share({
                         files: [safeFile],
-                        title: 'Arquivo Recebido P2P',
-                        text: 'Salvar arquivo recebido pelo ecossistema local VØLT.'
+                        title: name,
+                        text: 'Mídia enviada via VØLT Share. Pronto para WhatsApp, Instagram e TikTok!'
                     });
-                    statusMessage.innerText = 'Salvo com sucesso!';
+                    statusMessage.innerText = 'Enviado com sucesso!';
                 } else {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -470,12 +464,12 @@
 
         shareBtn.addEventListener('click', () => {
             if (!selectedFile || !dataChannel || dataChannel.readyState !== 'open') {
-                statusMessage.innerText = 'Erro: Nenhum aparelho conectado para enviar.';
+                statusMessage.innerText = 'Erro: Nenhum dispositivo pareado nesta sala.';
                 return;
             }
 
             shareBtn.classList.add('loading');
-            statusMessage.innerText = 'Preparando envio P2P...';
+            statusMessage.innerText = 'Iniciando envio P2P...';
 
             dataChannel.send(JSON.stringify({
                 type: 'header',
@@ -492,11 +486,11 @@
                 offset += e.target.result.byteLength;
 
                 if (offset < selectedFile.size) {
-                    statusMessage.innerText = `Enviando: ${Math.round((offset / selectedFile.size) * 100)}%`;
+                    statusMessage.innerText = `Transmitindo: ${Math.round((offset / selectedFile.size) * 100)}%`;
                     lerProximoBloco();
                 } else {
                     dataChannel.send(JSON.stringify({ type: 'eof' }));
-                    statusMessage.innerText = 'Envio concluído com sucesso!';
+                    statusMessage.innerText = 'Mídia enviada! Pronto no outro aparelho.';
                     shareBtn.classList.remove('loading');
                     
                     setTimeout(() => {
