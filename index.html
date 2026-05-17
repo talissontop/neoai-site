@@ -159,11 +159,11 @@
         .drop-zone {
             width: 100%;
             max-width: 400px;
-            height: 240px;
+            height: 220px;
             border: 2.5px dashed var(--accent-color);
             border-radius: 28px;
             background: var(--glass);
-            backdrop-filter: blur(166px);
+            backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             display: flex;
             flex-direction: column;
@@ -195,28 +195,28 @@
             background: var(--glass);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 15px;
+            padding: 12px;
             display: none; /* Só aparece quando o arquivo for selecionado */
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
         .social-menu-title {
-            font-size: 12px;
+            font-size: 11px;
             text-align: center;
             opacity: 0.5;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .social-btn {
             width: 100%;
             border: none;
-            padding: 14px;
+            padding: 12px;
             border-radius: 14px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             color: #fff;
@@ -228,7 +228,9 @@
         }
 
         .social-btn:active { transform: scale(0.98); }
-        .btn-whatsapp { background: #25D366; color: #fff; }
+        .btn-whatsapp { background: #25D366; }
+        /* CORREÇÃO VISUAL: Estilo gradiente premium oficial do Instagram */
+        .btn-instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
         .btn-tiktok { background: #000000; border: 1px solid rgba(255,255,255,0.2); }
         .btn-facebook { background: #1877F2; }
 
@@ -262,22 +264,22 @@
                 <div class="feature-item">
                     <div class="feature-icon">🚀</div>
                     <div class="feature-text">
-                        <h3>WhatsApp, TikTok & Facebook</h3>
-                        <p>Compartilhe mídias e arquivos diretamente com suas redes sociais favoritas instaladas no iPhone.</p>
+                        <h3>Redes Sociais Diretas</h3>
+                        <p>Compartilhe mídias e arquivos diretamente no WhatsApp, Instagram, TikTok e Facebook instalados no dispositivo.</p>
                     </div>
                 </div>
                 <div class="feature-item">
                     <div class="feature-icon">🛡️</div>
                     <div class="feature-text">
-                        <h3>Criptografia WebRTC P2P</h3>
-                        <p>Os arquivos correm direto de um aparelho para o outro de forma 100% segura e privada pelo ar.</p>
+                        <h3>Transferência Sem Fio P2P</h3>
+                        <p>Envie arquivos diretamente de um celular para o outro pelo ar, de forma segura e criptografada via Wi-Fi local.</p>
                     </div>
                 </div>
                 <div class="feature-item">
                     <div class="feature-icon">📱</div>
                     <div class="feature-text">
                         <h3>App Nativo de Tela</h3>
-                        <p>Compatibilidade total com iPhone 8 Plus e iPads. Salve na tela inicial e use livremente.</p>
+                        <p>Compatibilidade total com iPhone 8 Plus e iPads. Salve na tela inicial e use livremente sem travas de cache.</p>
                     </div>
                 </div>
             </div>
@@ -313,6 +315,7 @@
         <div class="social-menu-container" id="socialMenu">
             <div class="social-menu-title">Compartilhar Direto no iPhone</div>
             <button class="social-btn btn-whatsapp" id="wsBtn">🟢 Compartilhar no WhatsApp</button>
+            <button class="social-btn btn-instagram" id="igBtn">📸 Postar / Enviar no Instagram</button>
             <button class="social-btn btn-tiktok" id="tkBtn">🎵 Enviar para o TikTok</button>
             <button class="social-btn btn-facebook" id="fbBtn">🔵 Enviar para o Facebook</button>
         </div>
@@ -325,7 +328,6 @@
     </div>
 
     <script>
-        // SERVICE WORKER REMOVIDO PARA EVITAR TRAVAS DE CACHE DO GITHUB
         const introScreen = document.getElementById('introScreen');
         const appScreen = document.getElementById('appScreen');
         const startBtn = document.getElementById('startBtn');
@@ -340,8 +342,9 @@
         const statusPeerText = document.getElementById('statusPeerText');
         const networkStatusBtn = document.getElementById('networkStatusBtn');
 
-        // Gatilhos dos botões individuais das redes
+        // Gatilhos dos botões individuais das redes (Injetando o Instagram mapeado)
         const wsBtn = document.getElementById('wsBtn');
+        const igBtn = document.getElementById('igBtn');
         const tkBtn = document.getElementById('tkBtn');
         const fbBtn = document.getElementById('fbBtn');
 
@@ -385,7 +388,6 @@
                 fileName.innerText = selectedFile.name;
                 dropZone.classList.add('has-file');
                 
-                // Abre o menu visual das redes e o P2P na hora
                 shareBtn.style.display = 'block';
                 socialMenu.style.display = 'flex';
                 statusMessage.innerText = 'Mídia pronta para envio.';
@@ -412,6 +414,7 @@
         }
 
         wsBtn.addEventListener('click', () => executarCompartilhamentoRedes('WhatsApp'));
+        igBtn.addEventListener('click', () => executarCompartilhamentoRedes('Instagram'));
         tkBtn.addEventListener('click', () => executarCompartilhamentoRedes('TikTok'));
         fbBtn.addEventListener('click', () => executarCompartilhamentoRedes('Facebook'));
 
