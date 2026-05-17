@@ -12,7 +12,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="handheldfriendly" content="true">
     
-    <link class="pwa-icon" rel="apple-touch-icon" href="https://via.placeholder.com/192/00eafe/000000?text=SHARE">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/192/00eafe/000000?text=SHARE">
 
     <title>VØLT Share - P2P AirDrop Universal</title>
 
@@ -159,11 +159,11 @@
         .drop-zone {
             width: 100%;
             max-width: 400px;
-            height: 260px;
+            height: 240px;
             border: 2.5px dashed var(--accent-color);
             border-radius: 28px;
             background: var(--glass);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(166px);
             -webkit-backdrop-filter: blur(16px);
             display: flex;
             flex-direction: column;
@@ -175,11 +175,7 @@
             transition: transform 0.2s ease, background 0.2s ease, border-style 0.2s ease;
         }
 
-        .drop-zone.touching {
-            transform: scale(0.97);
-            background: rgba(0, 234, 254, 0.08);
-        }
-
+        .drop-zone.touching { transform: scale(0.97); background: rgba(0, 234, 254, 0.08); }
         .drop-zone.has-file { border-style: solid; box-shadow: 0 0 30px rgba(0, 234, 254, 0.15); }
         .drop-zone svg { margin-bottom: 16px; }
         #fileInput { display: none; }
@@ -192,61 +188,67 @@
             font-weight: 500;
         }
 
-        /* Estilização do grupo de botões de ação */
-        .action-buttons-group {
+        /* Menu de Redes Sociais Integradas na Tela */
+        .social-menu-container {
             width: 100%;
             max-width: 400px;
-            display: flex;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            display: none; /* Só aparece quando o arquivo for selecionado */
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
+
+        .social-menu-title {
+            font-size: 12px;
+            text-align: center;
+            opacity: 0.5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .social-btn {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.1s ease;
+        }
+
+        .social-btn:active { transform: scale(0.98); }
+        .btn-whatsapp { background: #25D366; color: #fff; }
+        .btn-tiktok { background: #000000; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-facebook { background: #1877F2; }
 
         .btn-share {
             width: 100%;
-            background: var(--accent-color);
-            color: #000;
-            border: none;
-            padding: 18px;
-            font-weight: 700;
-            border-radius: 18px;
-            font-size: 16px;
-            cursor: pointer;
-            display: none;
-            box-shadow: 0 4px 25px rgba(0, 234, 254, 0.35);
-        }
-
-        /* Novo Botão de Compartilhamento Direto para Redes Sociais */
-        .btn-direct-share {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.06);
+            max-width: 400px;
+            background: transparent;
             color: var(--accent-color);
             border: 1.5px solid var(--accent-color);
-            padding: 16px;
-            font-weight: 700;
-            border-radius: 18px;
-            font-size: 15px;
+            padding: 14px;
+            font-weight: 600;
+            border-radius: 16px;
+            font-size: 14px;
             cursor: pointer;
             display: none;
-            transition: background 0.2s ease;
-        }
-
-        .btn-direct-share:active {
-            background: rgba(0, 234, 254, 0.15);
+            margin-top: 5px;
         }
 
         .btn-share.loading { opacity: 0.6; pointer-events: none; }
-
-        .instruction-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            padding: 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            text-align: center;
-            max-width: 400px;
-            line-height: 1.4;
-        }
-
+        .instruction-box { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); padding: 14px; border-radius: 20px; font-size: 12px; text-align: center; max-width: 400px; line-height: 1.4; }
         .status-message { font-size: 13px; opacity: 0.7; min-height: 18px; text-align: center; margin: 5px 0; }
     </style>
 </head>
@@ -260,11 +262,10 @@
                 <div class="feature-item">
                     <div class="feature-icon">🚀</div>
                     <div class="feature-text">
-                        <h3>WhatsApp, Instagram & TikTok</h3>
-                        <p>Compartilhe mídias e arquivos diretamente com seus contatos e redes sociais num piscar de olhos.</p>
+                        <h3>WhatsApp, TikTok & Facebook</h3>
+                        <p>Compartilhe mídias e arquivos diretamente com suas redes sociais favoritas instaladas no iPhone.</p>
                     </div>
                 </div>
-
                 <div class="feature-item">
                     <div class="feature-icon">🛡️</div>
                     <div class="feature-text">
@@ -272,12 +273,11 @@
                         <p>Os arquivos correm direto de um aparelho para o outro de forma 100% segura e privada pelo ar.</p>
                     </div>
                 </div>
-
                 <div class="feature-item">
                     <div class="feature-icon">📱</div>
                     <div class="feature-text">
-                        <h3>App Nativo e Off-line</h3>
-                        <p>Compatibilidade total com iPhone 8 Plus e iPads. Salve na tela inicial e use sem precisar abrir o navegador de novo.</p>
+                        <h3>App Nativo de Tela</h3>
+                        <p>Compatibilidade total com iPhone 8 Plus e iPads. Salve na tela inicial e use livremente.</p>
                     </div>
                 </div>
             </div>
@@ -290,7 +290,7 @@
     <div class="screen-container" id="appScreen" style="display: none;">
         <div class="header">
             <h1>VØLT<span>SHARE</span></h1>
-            <p>P2P Social Transfer</p>
+            <p>Social Transfer System</p>
         </div>
 
         <div class="network-status" id="networkStatusBtn">
@@ -310,10 +310,14 @@
 
         <div class="status-message" id="statusMessage"></div>
 
-        <div class="action-buttons-group">
-            <button class="btn-share" id="shareBtn">Enviar via P2P pelo Ar</button>
-            <button class="btn-direct-share" id="directShareBtn">Compartilhar Direto (WhatsApp / Redes)</button>
+        <div class="social-menu-container" id="socialMenu">
+            <div class="social-menu-title">Compartilhar Direto no iPhone</div>
+            <button class="social-btn btn-whatsapp" id="wsBtn">🟢 Compartilhar no WhatsApp</button>
+            <button class="social-btn btn-tiktok" id="tkBtn">🎵 Enviar para o TikTok</button>
+            <button class="social-btn btn-facebook" id="fbBtn">🔵 Enviar para o Facebook</button>
         </div>
+
+        <button class="btn-share" id="shareBtn">Transferir via P2P (Outro Celular)</button>
 
         <div class="instruction-box" id="pwaPrompt">
             🔗 <b>Como conectar com outra pessoa:</b> Toque na barra superior para copiar o link e abra ele no outro aparelho para se encontrarem automaticamente.
@@ -321,28 +325,25 @@
     </div>
 
     <script>
-        // Ativador Off-line nativo do Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('VØLT Share pronto offline!'))
-                    .catch(err => console.log('Erro sw:', err));
-            });
-        }
-
+        // SERVICE WORKER REMOVIDO PARA EVITAR TRAVAS DE CACHE DO GITHUB
         const introScreen = document.getElementById('introScreen');
         const appScreen = document.getElementById('appScreen');
         const startBtn = document.getElementById('startBtn');
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const shareBtn = document.getElementById('shareBtn');
-        const directShareBtn = document.getElementById('directShareBtn');
+        const socialMenu = document.getElementById('socialMenu');
         const fileName = document.getElementById('fileName');
         const statusMessage = document.getElementById('statusMessage');
         const pwaPrompt = document.getElementById('pwaPrompt');
         const statusDot = document.getElementById('statusDot');
         const statusPeerText = document.getElementById('statusPeerText');
         const networkStatusBtn = document.getElementById('networkStatusBtn');
+
+        // Gatilhos dos botões individuais das redes
+        const wsBtn = document.getElementById('wsBtn');
+        const tkBtn = document.getElementById('tkBtn');
+        const fbBtn = document.getElementById('fbBtn');
 
         let selectedFile = null;
         let peerConnection = null;
@@ -353,7 +354,6 @@
 
         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
         
-        // FUNÇÃO DE INTELIGÊNCIA: Se não houver sala na URL, gera uma automática aleatória de 4 dígitos
         if(!window.location.hash || window.location.hash === '#volt-default') {
             const salaAleatoria = Math.floor(1000 + Math.random() * 9000);
             window.location.hash = `#sala${salaAleatoria}`;
@@ -368,7 +368,6 @@
 
         if (window.navigator.standalone === true) { pwaPrompt.style.display = 'none'; }
 
-        // Ação para facilitar achar o outro celular: Clicar no status copia o link direto
         networkStatusBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(window.location.href);
             const textoOriginal = statusPeerText.innerText;
@@ -386,31 +385,35 @@
                 fileName.innerText = selectedFile.name;
                 dropZone.classList.add('has-file');
                 
-                // Mostra as duas opções disponíveis de compartilhamento
+                // Abre o menu visual das redes e o P2P na hora
                 shareBtn.style.display = 'block';
-                directShareBtn.style.display = 'block';
-                statusMessage.innerText = 'Arquivo pronto.';
+                socialMenu.style.display = 'flex';
+                statusMessage.innerText = 'Mídia pronta para envio.';
             }
         });
 
-        // NOVA FUNÇÃO: DISPARA DIRETAMENTE AS REDES SOCIAIS DO APARELHO ATUAL (Independente de conexão)
-        directShareBtn.addEventListener('click', async () => {
+        // AÇÃO EXCLUSIVA DAS ABAS SOCIAIS: Dispara o Share Sheet do iPhone acionando os canais pedidos
+        function executarCompartilhamentoRedes(redeNome) {
             if (!selectedFile) return;
-            statusMessage.innerText = 'Abrindo menu de compartilhamento...';
-            try {
-                const safeFile = new File([selectedFile], selectedFile.name, { type: selectedFile.type || 'application/octet-stream' });
-                if (navigator.canShare && navigator.canShare({ files: [safeFile] })) {
-                    await navigator.share({
-                        files: [safeFile],
-                        title: selectedFile.name,
-                        text: 'Disparado via VØLT Share direto para WhatsApp/Redes.'
-                    });
-                    statusMessage.innerText = 'Ação concluída!';
-                }
-            } catch (error) {
-                statusMessage.innerText = 'Compartilhamento fechado.';
+            statusMessage.innerText = `Preparando para o ${redeNome}...`;
+            
+            const safeFile = new File([selectedFile], selectedFile.name, { type: selectedFile.type || 'application/octet-stream' });
+            if (navigator.canShare && navigator.canShare({ files: [safeFile] })) {
+                navigator.share({
+                    files: [safeFile],
+                    title: selectedFile.name,
+                    text: `Compartilhando via VØLT Share direto para o ${redeNome}.`
+                }).then(() => {
+                    statusMessage.innerText = 'Enviado!';
+                }).catch(() => {
+                    statusMessage.innerText = 'Compartilhamento cancelado.';
+                });
             }
-        });
+        }
+
+        wsBtn.addEventListener('click', () => executarCompartilhamentoRedes('WhatsApp'));
+        tkBtn.addEventListener('click', () => executarCompartilhamentoRedes('TikTok'));
+        fbBtn.addEventListener('click', () => executarCompartilhamentoRedes('Facebook'));
 
         function inicializarSinalizacao() {
             socket = new WebSocket('wss://stream.socketsbay.com/wss/v2/1/demo/');
@@ -507,7 +510,7 @@
                     await navigator.share({
                         files: [safeFile],
                         title: name,
-                        text: 'Mídia recebida via VØLT Share. Pronto para enviar!'
+                        text: 'Mídia recebida via VØLT Share.'
                     });
                     statusMessage.innerText = 'Concluído!';
                 } else {
@@ -557,7 +560,7 @@
                         fileInput.value = '';
                         fileName.innerText = '';
                         shareBtn.style.display = 'none';
-                        directShareBtn.style.display = 'none';
+                        socialMenu.style.display = 'none';
                         dropZone.classList.remove('has-file');
                         statusMessage.innerText = '';
                     }, 2500);
