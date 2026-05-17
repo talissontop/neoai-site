@@ -2,19 +2,16 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <!-- Configurações obrigatórias para transformar o site em App no iPhone e iPad -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="VØLT Share">
     <meta name="theme-color" content="#0f172a">
     
-    <!-- Tags de alta compatibilidade para iOS e iPadOS -->
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="format-detection" content="telephone=no">
     <meta name="handheldfriendly" content="true">
     
-    <!-- Ícone que aparecerá na tela inicial do iPhone/iPad -->
     <link class="pwa-icon" rel="apple-touch-icon" href="https://via.placeholder.com/192/00eafe/000000?text=SHARE">
 
     <title>VØLT Share - P2P AirDrop Universal</title>
@@ -146,6 +143,7 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 10px;
+            cursor: pointer;
         }
 
         .status-dot {
@@ -194,9 +192,17 @@
             font-weight: 500;
         }
 
-        .btn-share {
+        /* Estilização do grupo de botões de ação */
+        .action-buttons-group {
             width: 100%;
             max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-share {
+            width: 100%;
             background: var(--accent-color);
             color: #000;
             border: none;
@@ -207,6 +213,25 @@
             cursor: pointer;
             display: none;
             box-shadow: 0 4px 25px rgba(0, 234, 254, 0.35);
+        }
+
+        /* Novo Botão de Compartilhamento Direto para Redes Sociais */
+        .btn-direct-share {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--accent-color);
+            border: 1.5px solid var(--accent-color);
+            padding: 16px;
+            font-weight: 700;
+            border-radius: 18px;
+            font-size: 15px;
+            cursor: pointer;
+            display: none;
+            transition: background 0.2s ease;
+        }
+
+        .btn-direct-share:active {
+            background: rgba(0, 234, 254, 0.15);
         }
 
         .btn-share.loading { opacity: 0.6; pointer-events: none; }
@@ -227,7 +252,6 @@
 </head>
 <body>
 
-    <!-- 1. TELA DE INFORMAÇÕES -->
     <div class="screen-container" id="introScreen">
         <div class="info-card">
             <h2>VØLT<span>SHARE</span></h2>
@@ -263,14 +287,13 @@
         <p style="font-size: 11px; opacity: 0.4;">VØLT Share &copy; 2026</p>
     </div>
 
-    <!-- 2. TELA DO APLICATIVO PRINCIPAL -->
     <div class="screen-container" id="appScreen" style="display: none;">
         <div class="header">
             <h1>VØLT<span>SHARE</span></h1>
             <p>P2P Social Transfer</p>
         </div>
 
-        <div class="network-status">
+        <div class="network-status" id="networkStatusBtn">
             <div class="status-dot" id="statusDot"></div>
             <span id="statusPeerText">Aguardando outro aparelho na sala...</span>
         </div>
@@ -287,19 +310,22 @@
 
         <div class="status-message" id="statusMessage"></div>
 
-        <button class="btn-share" id="shareBtn">Enviar via P2P pelo Ar</button>
+        <div class="action-buttons-group">
+            <button class="btn-share" id="shareBtn">Enviar via P2P pelo Ar</button>
+            <button class="btn-direct-share" id="directShareBtn">Compartilhar Direto (WhatsApp / Redes)</button>
+        </div>
 
         <div class="instruction-box" id="pwaPrompt">
-            🔗 <b>Como conectar com outra pessoa:</b> Copie o link completo com o final <b>#salaX</b> (mude o X para qualquer número) e abra o mesmo link no outro aparelho.
+            🔗 <b>Como conectar com outra pessoa:</b> Toque na barra superior para copiar o link e abra ele no outro aparelho para se encontrarem automaticamente.
         </div>
     </div>
 
     <script>
-        // Ativador Off-line nativo do Service Worker (Mantido)
+        // Ativador Off-line nativo do Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('VØLT Share pronto offline!', reg))
+                    .then(reg => console.log('VØLT Share pronto offline!'))
                     .catch(err => console.log('Erro sw:', err));
             });
         }
@@ -310,11 +336,13 @@
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const shareBtn = document.getElementById('shareBtn');
+        const directShareBtn = document.getElementById('directShareBtn');
         const fileName = document.getElementById('fileName');
         const statusMessage = document.getElementById('statusMessage');
         const pwaPrompt = document.getElementById('pwaPrompt');
         const statusDot = document.getElementById('statusDot');
         const statusPeerText = document.getElementById('statusPeerText');
+        const networkStatusBtn = document.getElementById('networkStatusBtn');
 
         let selectedFile = null;
         let peerConnection = null;
@@ -324,8 +352,13 @@
         let incomingFileInfo = null;
 
         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-        const roomName = window.location.hash || '#volt-default';
-        window.location.hash = roomName;
+        
+        // FUNÇÃO DE INTELIGÊNCIA: Se não houver sala na URL, gera uma automática aleatória de 4 dígitos
+        if(!window.location.hash || window.location.hash === '#volt-default') {
+            const salaAleatoria = Math.floor(1000 + Math.random() * 9000);
+            window.location.hash = `#sala${salaAleatoria}`;
+        }
+        const roomName = window.location.hash;
 
         startBtn.addEventListener('click', () => {
             introScreen.style.display = 'none';
@@ -334,6 +367,14 @@
         });
 
         if (window.navigator.standalone === true) { pwaPrompt.style.display = 'none'; }
+
+        // Ação para facilitar achar o outro celular: Clicar no status copia o link direto
+        networkStatusBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(window.location.href);
+            const textoOriginal = statusPeerText.innerText;
+            statusPeerText.innerText = '🔗 Link de conexão copiado!';
+            setTimeout(() => { statusPeerText.innerText = textoOriginal; }, 2000);
+        });
 
         dropZone.addEventListener('touchstart', () => dropZone.classList.add('touching'));
         dropZone.addEventListener('touchend', () => dropZone.classList.remove('touching'));
@@ -344,8 +385,30 @@
                 selectedFile = e.target.files[0];
                 fileName.innerText = selectedFile.name;
                 dropZone.classList.add('has-file');
+                
+                // Mostra as duas opções disponíveis de compartilhamento
                 shareBtn.style.display = 'block';
-                statusMessage.innerText = 'Arquivo pronto para envio.';
+                directShareBtn.style.display = 'block';
+                statusMessage.innerText = 'Arquivo pronto.';
+            }
+        });
+
+        // NOVA FUNÇÃO: DISPARA DIRETAMENTE AS REDES SOCIAIS DO APARELHO ATUAL (Independente de conexão)
+        directShareBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+            statusMessage.innerText = 'Abrindo menu de compartilhamento...';
+            try {
+                const safeFile = new File([selectedFile], selectedFile.name, { type: selectedFile.type || 'application/octet-stream' });
+                if (navigator.canShare && navigator.canShare({ files: [safeFile] })) {
+                    await navigator.share({
+                        files: [safeFile],
+                        title: selectedFile.name,
+                        text: 'Disparado via VØLT Share direto para WhatsApp/Redes.'
+                    });
+                    statusMessage.innerText = 'Ação concluída!';
+                }
+            } catch (error) {
+                statusMessage.innerText = 'Compartilhamento fechado.';
             }
         });
 
@@ -437,28 +500,25 @@
             };
         }
 
-        // FUNÇÃO DE DISPARO INTERNA CONFIGURADA EXCLUSIVAMENTE PARA REDES SOCIAIS DO IOS
         async function dispararCompartilhamentoNativo(blob, name) {
             try {
                 const safeFile = new File([blob], name, { type: blob.type || 'application/octet-stream' });
-                
-                // O iOS lê os parâmetros abaixo para injetar as opções certas no menu de compartilhamento
                 if (navigator.canShare && navigator.canShare({ files: [safeFile] })) {
                     await navigator.share({
                         files: [safeFile],
                         title: name,
-                        text: 'Mídia enviada via VØLT Share. Pronto para WhatsApp, Instagram e TikTok!'
+                        text: 'Mídia recebida via VØLT Share. Pronto para enviar!'
                     });
-                    statusMessage.innerText = 'Enviado com sucesso!';
+                    statusMessage.innerText = 'Concluído!';
                 } else {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url; a.download = name;
                     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                    statusMessage.innerText = 'Download concluído via contingência.';
+                    statusMessage.innerText = 'Download concluído.';
                 }
             } catch (e) {
-                statusMessage.innerText = 'Transferência finalizada.';
+                statusMessage.innerText = 'Finalizado.';
             }
         }
 
@@ -490,13 +550,14 @@
                     lerProximoBloco();
                 } else {
                     dataChannel.send(JSON.stringify({ type: 'eof' }));
-                    statusMessage.innerText = 'Mídia enviada! Pronto no outro aparelho.';
+                    statusMessage.innerText = 'Mídia enviada!';
                     shareBtn.classList.remove('loading');
                     
                     setTimeout(() => {
                         fileInput.value = '';
                         fileName.innerText = '';
                         shareBtn.style.display = 'none';
+                        directShareBtn.style.display = 'none';
                         dropZone.classList.remove('has-file');
                         statusMessage.innerText = '';
                     }, 2500);
